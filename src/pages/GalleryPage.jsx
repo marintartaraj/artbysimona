@@ -1,24 +1,24 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Helmet } from "react-helmet"
-import { X, ChevronLeft, ChevronRight, Eye, Sparkles, Palette, Scissors, Heart } from "lucide-react"
-import { Button } from "@/components/ui/button" // <--- FIXED: Import Button
+import { X, ChevronLeft, ChevronRight, Eye, Sparkles, Palette, Scissors, Heart, ArrowRight, Calendar, Mail, Star } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const GOLD = "#E6C97A"
+const EMERALD = "#10B981"
 
 const categories = [
-  { id: "all", name: "All Work" },
-  { id: "lashes", name: "Lash Extensions" },
-  { id: "nails", name: "Nail Artistry" },
-  { id: "makeup", name: "Makeup" },
-  { id: "hair", name: "Hair Styling" },
-  { id: "microblading", name: "Microblading" },
-  { id: "salon", name: "Our Salon" },
+  { id: "all", name: "All Work", icon: "✨" },
+  { id: "lashes", name: "Lash Extensions", icon: "👁️" },
+  { id: "nails", name: "Nail Artistry", icon: "💅" },
+  { id: "makeup", name: "Makeup", icon: "🎨" },
+  { id: "hair", name: "Hair Styling", icon: "✂️" },
+  { id: "microblading", name: "Microblading", icon: "✏️" },
+  { id: "salon", name: "Our Salon", icon: "🏠" },
 ]
 
-// ... (galleryImages array stays the same)
 const galleryImages = [
   // Hair Styling
   {
@@ -137,12 +137,22 @@ const galleryImages = [
     src: "/assets/photos/artbysimona.jpeg",
   },
 ]
-;
 
-// Component
-const Gallery = ({ onBookingClick }) => {  // <-- Add prop if you want the booking button to work!
+const Gallery = ({ onBookingClick }) => {
   const [selectedImage, setSelectedImage] = useState(null)
   const [selectedCategory, setSelectedCategory] = useState("all")
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const filteredImages =
     selectedCategory === "all"
@@ -192,17 +202,29 @@ const Gallery = ({ onBookingClick }) => {  // <-- Add prop if you want the booki
       </Helmet>
 
       {/* Hero Section */}
-      <section className="relative py-14 md:py-20 bg-emerald-950">
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-10 left-10 w-28 h-28 bg-white rounded-full blur-2xl"></div>
-          <div className="absolute bottom-20 right-10 w-20 h-20 bg-emerald-200 rounded-full blur-xl"></div>
-        </div>
-        <div className="max-w-3xl md:max-w-5xl mx-auto px-4 text-center relative z-10">
-          <motion.h1
+      <section className="relative py-12 sm:py-16 md:py-20 bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-800 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.1),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(230,201,122,0.05),transparent_50%)]" />
+        
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-3xl xs:text-4xl md:text-6xl font-bold mb-5 md:mb-6 text-white leading-tight"
+            className="mb-6 sm:mb-8"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-6">
+              <Star className="w-3 h-3 sm:w-4 sm:h-4 text-gold" />
+              <span className="text-xs sm:text-sm font-medium text-emerald-100">Our Portfolio</span>
+            </div>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 text-white leading-tight"
             style={{
               fontFamily: "'Montserrat', sans-serif",
               letterSpacing: "0.12em",
@@ -223,11 +245,12 @@ const Gallery = ({ onBookingClick }) => {  // <-- Add prop if you want the booki
               }}
             >Gallery</span>
           </motion.h1>
+          
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-base xs:text-lg md:text-xl text-emerald-100 max-w-2xl md:max-w-3xl mx-auto leading-relaxed"
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-emerald-100 max-w-2xl sm:max-w-3xl mx-auto leading-relaxed px-4"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             Discover the artistry and transformations that happen in our jungle glam sanctuary. Each image tells a story
@@ -237,34 +260,34 @@ const Gallery = ({ onBookingClick }) => {  // <-- Add prop if you want the booki
       </section>
 
       {/* Filter Tabs */}
-      <section className="py-4 md:py-8 bg-emerald-900">
+      <section className="py-6 sm:py-8 bg-gradient-to-b from-emerald-800 to-emerald-900">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 md:pb-0 md:justify-center">
-            {categories.map(({ id, name }) => {
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-2 sm:pb-0 sm:justify-center">
+            {categories.map(({ id, name, icon }) => {
               const CategoryIcon = getCategoryIcon(id)
               return (
                 <motion.button
                   key={id}
                   onClick={() => setSelectedCategory(id)}
                   className={`
-                    flex items-center gap-2 px-4 py-2 xs:px-6 xs:py-3 rounded-full font-semibold whitespace-nowrap transition-all duration-300
+                    flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-full font-semibold whitespace-nowrap transition-all duration-300 touch-target
                     ${selectedCategory === id
-                      ? "bg-white text-emerald-900 shadow-emerald-100 shadow-lg scale-105 border-2"
+                      ? "bg-gradient-to-r from-gold to-yellow-400 text-emerald-950 shadow-lg scale-105 border-2"
                       : "bg-emerald-800/40 backdrop-blur-sm border border-emerald-700/30 text-emerald-100 hover:bg-emerald-800/60"
                     }
                   `}
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
                     border: selectedCategory === id ? `2px solid ${GOLD}` : undefined,
-                    color: selectedCategory === id ? GOLD : undefined,
+                    color: selectedCategory === id ? "#4C3B12" : undefined,
                     boxShadow: selectedCategory === id ? `0 1px 8px ${GOLD}33` : undefined,
                   }}
-                  whileHover={{ scale: 1.07 }}
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   type="button"
                 >
-                  {id !== "all" && <CategoryIcon className="w-4 h-4" style={{ color: selectedCategory === id ? GOLD : undefined }} />}
-                  {name}
+                  <span className="text-sm sm:text-base">{icon}</span>
+                  <span className="text-xs sm:text-sm">{name}</span>
                 </motion.button>
               )
             })}
@@ -273,38 +296,38 @@ const Gallery = ({ onBookingClick }) => {  // <-- Add prop if you want the booki
       </section>
 
       {/* Gallery Grid */}
-      <section className="py-8 md:py-16 bg-emerald-900">
+      <section className="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-emerald-900 to-emerald-950">
         <div className="max-w-6xl mx-auto px-4">
-          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             <AnimatePresence>
               {filteredImages.map((image, idx) => (
                 <motion.div
                   key={image.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.92 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.92 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4, delay: idx * 0.03 }}
-                  className="relative group cursor-pointer rounded-2xl shadow-lg shadow-emerald-900/20 bg-emerald-800/50 backdrop-blur-sm border border-emerald-700/25 overflow-hidden"
+                  className="relative group cursor-pointer rounded-2xl shadow-lg shadow-emerald-950/20 bg-gradient-to-br from-emerald-900/60 to-emerald-800/60 backdrop-blur-xl border overflow-hidden"
                   onClick={() => openLightbox(image)}
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
-                    border: `2px solid ${GOLD}22`,
+                    border: `1.5px solid ${GOLD}22`,
                     boxShadow: `0 2px 12px ${GOLD}14`
                   }}
-                  whileHover={{ scale: 1.035, rotateX: 2, rotateY: -2, boxShadow: `0 8px 32px ${GOLD}33` }}
+                  whileHover={{ scale: 1.02, y: -3 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <img
-                    className="w-full h-48 xs:h-56 sm:h-56 md:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-48 sm:h-56 lg:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
                     alt={`${image.title} - ${image.description}`}
                     src={image.src || "/placeholder.svg"}
                   />
-                  {/* Overlay on hover/tap */}
-                  <div className="absolute inset-0 bg-emerald-950/80 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <div className="text-center text-white p-3 sm:p-4">
-                      <h3 className="text-base xs:text-lg sm:text-xl font-semibold mb-1" style={{ color: GOLD }}>{image.title}</h3>
-                      <p className="text-xs xs:text-sm sm:text-base text-emerald-100">{image.description}</p>
+                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-950/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                    <div className="text-center text-white p-4 w-full">
+                      <h3 className="text-sm sm:text-base font-semibold mb-2" style={{ color: GOLD }}>{image.title}</h3>
+                      <p className="text-xs sm:text-sm text-emerald-100 leading-relaxed">{image.description}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -321,14 +344,14 @@ const Gallery = ({ onBookingClick }) => {  // <-- Add prop if you want the booki
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-emerald-950 bg-opacity-95 backdrop-blur-sm flex items-center justify-center p-2 xs:p-4"
+            className="fixed inset-0 z-50 bg-emerald-950/95 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={closeLightbox}
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="relative w-full max-w-xs xs:max-w-lg sm:max-w-2xl md:max-w-3xl max-h-[90vh] rounded-2xl overflow-hidden shadow-emerald-950/50 shadow-2xl border border-emerald-800/30 bg-emerald-950"
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-3xl max-h-[90vh] rounded-3xl overflow-hidden shadow-2xl shadow-emerald-950/50 border bg-gradient-to-br from-emerald-900/95 to-emerald-800/95 backdrop-blur-xl"
               onClick={e => e.stopPropagation()}
               style={{
                 fontFamily: "'Montserrat', sans-serif",
@@ -338,41 +361,45 @@ const Gallery = ({ onBookingClick }) => {  // <-- Add prop if you want the booki
               {/* Close */}
               <button
                 onClick={closeLightbox}
-                className="absolute top-2 right-2 xs:top-4 xs:right-4 z-20 w-9 h-9 xs:w-10 xs:h-10 bg-emerald-900 bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all duration-200 border"
+                className="absolute top-3 right-3 z-20 w-8 h-8 sm:w-10 sm:h-10 bg-emerald-900/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-emerald-900 transition-all duration-200 border touch-target"
                 aria-label="Close lightbox"
                 style={{ border: `2px solid ${GOLD}44`, color: GOLD }}
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
+              
               {/* Prev */}
               <button
                 onClick={() => navigateImage("prev")}
-                className="absolute left-2 xs:left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 xs:w-12 xs:h-12 bg-emerald-900 bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all duration-200 border"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-emerald-900/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-emerald-900 transition-all duration-200 border touch-target"
                 aria-label="Previous image"
                 style={{ border: `2px solid ${GOLD}44`, color: GOLD }}
               >
-                <ChevronLeft className="w-5 h-5 xs:w-6 xs:h-6" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </button>
+              
               {/* Next */}
               <button
                 onClick={() => navigateImage("next")}
-                className="absolute right-2 xs:right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 xs:w-12 xs:h-12 bg-emerald-900 bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all duration-200 border"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-emerald-900/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-emerald-900 transition-all duration-200 border touch-target"
                 aria-label="Next image"
                 style={{ border: `2px solid ${GOLD}44`, color: GOLD }}
               >
-                <ChevronRight className="w-5 h-5 xs:w-6 xs:h-6" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </button>
+              
               {/* Image */}
               <img
-                className="max-w-full max-h-[60vh] sm:max-h-[70vh] md:max-h-[78vh] object-contain mx-auto"
+                className="max-w-full max-h-[50vh] sm:max-h-[60vh] md:max-h-[70vh] object-contain mx-auto"
                 alt={`${selectedImage.title} - ${selectedImage.description}`}
                 src={selectedImage.src || "/placeholder.svg"}
               />
+              
               {/* Info */}
-              <div className="absolute bottom-0 left-0 right-0 bg-emerald-900/95 text-white p-4 xs:p-6 rounded-b-2xl border-t"
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-emerald-900/95 to-emerald-800/95 backdrop-blur-xl text-white p-4 sm:p-6 rounded-b-3xl border-t"
                 style={{ borderTop: `2px solid ${GOLD}44` }}>
-                <h3 className="text-lg xs:text-2xl font-semibold mb-1" style={{ color: GOLD }}>{selectedImage.title}</h3>
-                <p className="text-emerald-100 text-sm xs:text-base">{selectedImage.description}</p>
+                <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2" style={{ color: GOLD }}>{selectedImage.title}</h3>
+                <p className="text-emerald-100 text-sm sm:text-base leading-relaxed">{selectedImage.description}</p>
               </div>
             </motion.div>
           </motion.div>
@@ -380,50 +407,68 @@ const Gallery = ({ onBookingClick }) => {  // <-- Add prop if you want the booki
       </AnimatePresence>
 
       {/* --- Call to Action --- */}
-      <section className="py-10 md:py-16 bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-800">
-        <div className="max-w-xl mx-auto px-2 text-center">
+      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-800">
+        <div className="max-w-4xl mx-auto px-4 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 28 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
+            <div className="inline-flex items-center gap-2 px-3 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-4">
+              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gold" />
+              <span className="text-xs sm:text-sm font-medium text-emerald-100">Ready to Transform?</span>
+            </div>
+            
             <h2
-              className="text-2xl xs:text-3xl font-bold text-white mb-3"
+              className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6"
               style={{
                 letterSpacing: "0.07em",
                 color: GOLD,
-                textShadow: `0 1px 6px ${GOLD}33`,
+                textShadow: `0 2px 12px ${GOLD}33`,
               }}
             >
               Ready to Transform Your Look?
             </h2>
-            <p className="text-base xs:text-lg text-emerald-100 mb-5">
+            
+            <p className="text-sm sm:text-base md:text-lg text-emerald-100 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4">
               Book your appointment and experience our jungle glam sanctuary.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-sm sm:max-w-md mx-auto">
               <Button
-                className="w-full sm:w-auto font-semibold rounded-full shadow-lg transition-all duration-300"
+                className="group relative overflow-hidden bg-gradient-to-r from-gold via-yellow-400 to-gold text-emerald-950 px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-bold rounded-full shadow-2xl transition-all duration-300 hover:scale-105 w-full touch-target"
                 style={{
-                  background: "linear-gradient(90deg, #FFD700 15%, #fffbe6 80%, #E6C97A 100%)",
-                  color: "#4C3B12",
-                  border: `2px solid ${GOLD}55`,
                   fontWeight: 800,
+                  letterSpacing: "0.02em",
                 }}
                 onClick={onBookingClick}
               >
-                Book Appointment
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  Book Appointment
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" />
+                </span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "100%" }}
+                  transition={{ duration: 0.6 }}
+                />
               </Button>
+              
               <Button
                 variant="outline"
-                className="w-full sm:w-auto border-2 px-6 py-3 text-base xs:text-lg font-semibold rounded-full transition-all duration-300"
+                className="border-2 px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-semibold rounded-full transition-all duration-300 hover:bg-white/10 w-full touch-target"
                 style={{
-                  border: `2px solid ${GOLD}`,
+                  borderColor: GOLD,
                   color: GOLD,
                   fontWeight: 600,
                 }}
               >
-                Contact Us
+                <span className="flex items-center justify-center gap-2">
+                  <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Contact Us
+                </span>
               </Button>
             </div>
           </motion.div>

@@ -12,16 +12,24 @@ import {
   Palette,
   Scissors,
   Heart,
+  ArrowRight,
+  Calendar,
+  Phone,
+  Mail,
+  Award,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const GOLD = "#E6C97A";
+const EMERALD = "#10B981";
 
 const ServicesPage = ({ onBookingClick }) => {
   const [services, setServices] = useState([]);
   const [grouped, setGrouped] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewPhoto, setViewPhoto] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const mockServices = [
     // Lash Extensions
@@ -32,6 +40,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 45,
       duration: 90,
       description: "Natural-looking individual lash extensions for everyday elegance",
+      icon: "👁️",
+      popular: true,
     },
     {
       id: 2,
@@ -40,6 +50,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 65,
       duration: 120,
       description: "Dramatic volume with multiple ultra-fine lashes per natural lash",
+      icon: "✨",
+      popular: false,
     },
     {
       id: 3,
@@ -48,6 +60,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 55,
       duration: 105,
       description: "Perfect blend of classic and volume techniques for textured fullness",
+      icon: "🌟",
+      popular: true,
     },
     {
       id: 4,
@@ -56,6 +70,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 35,
       duration: 60,
       description: "Natural lash enhancement with curl and color for low-maintenance beauty",
+      icon: "💫",
+      popular: false,
     },
     // Nail Services
     {
@@ -65,6 +81,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 35,
       duration: 60,
       description: "Long-lasting gel polish with cuticle care and hand massage",
+      icon: "💅",
+      popular: true,
     },
     {
       id: 6,
@@ -73,6 +91,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 50,
       duration: 90,
       description: "Custom nail art with intricate designs and premium finishes",
+      icon: "🎨",
+      popular: false,
     },
     {
       id: 7,
@@ -81,6 +101,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 60,
       duration: 120,
       description: "Beautiful nail extensions with gel overlay and shaping",
+      icon: "💎",
+      popular: true,
     },
     {
       id: 8,
@@ -89,6 +111,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 45,
       duration: 75,
       description: "Complete foot care with exfoliation, massage, and gel polish",
+      icon: "🦶",
+      popular: false,
     },
     // Makeup Services
     {
@@ -98,6 +122,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 80,
       duration: 90,
       description: "Flawless bridal look with trial session and touch-up kit",
+      icon: "👰",
+      popular: true,
     },
     {
       id: 10,
@@ -106,6 +132,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 60,
       duration: 60,
       description: "Glamorous makeup for parties, photoshoots, and special occasions",
+      icon: "🎭",
+      popular: false,
     },
     {
       id: 11,
@@ -114,6 +142,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 45,
       duration: 45,
       description: "Everyday makeup enhancement with natural, radiant finish",
+      icon: "✨",
+      popular: false,
     },
     // Hair Services
     {
@@ -123,6 +153,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 50,
       duration: 90,
       description: "Professional haircut with wash, style, and finishing",
+      icon: "✂️",
+      popular: false,
     },
     {
       id: 13,
@@ -131,6 +163,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 85,
       duration: 180,
       description: "Hair coloring with highlights and professional color treatment",
+      icon: "🎨",
+      popular: true,
     },
     {
       id: 14,
@@ -139,6 +173,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 35,
       duration: 45,
       description: "Professional blowout with styling for special occasions",
+      icon: "💨",
+      popular: false,
     },
     // Microblading
     {
@@ -148,6 +184,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 180,
       duration: 150,
       description: "Semi-permanent eyebrow enhancement with natural hair-stroke technique",
+      icon: "✏️",
+      popular: true,
     },
     {
       id: 16,
@@ -156,6 +194,8 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 80,
       duration: 90,
       description: "6-8 week touch-up session to perfect your microblading results",
+      icon: "🔄",
+      popular: false,
     },
     {
       id: 17,
@@ -164,8 +204,21 @@ const ServicesPage = ({ onBookingClick }) => {
       price: 25,
       duration: 30,
       description: "Professional eyebrow shaping with tinting for defined brows",
+      icon: "👁️",
+      popular: false,
     },
   ];
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -211,6 +264,8 @@ const ServicesPage = ({ onBookingClick }) => {
     }
   };
 
+  const popularServices = services.filter(service => service.popular);
+
   return (
     <>
       <Helmet>
@@ -225,38 +280,38 @@ const ServicesPage = ({ onBookingClick }) => {
       <AnimatePresence>
         {viewPhoto && (
           <motion.div
-            className="fixed inset-0 z-50 bg-emerald-950/80 flex items-center justify-center px-2"
+            className="fixed inset-0 z-50 bg-emerald-950/95 backdrop-blur-sm flex items-center justify-center px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setViewPhoto(null)}
           >
             <motion.div
-              className="bg-emerald-900 border border-emerald-800/30 rounded-2xl max-w-[95vw] w-full xs:w-[330px] sm:w-[400px] shadow-xl p-4 sm:p-6 relative flex flex-col items-center"
-              initial={{ scale: 0.97, opacity: 0 }}
+              className="bg-gradient-to-br from-emerald-900/95 to-emerald-800/95 backdrop-blur-xl border border-emerald-800/30 rounded-3xl max-w-[95vw] w-full sm:w-[400px] shadow-2xl p-4 sm:p-6 relative flex flex-col items-center"
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.97, opacity: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                className="absolute top-3 right-3 text-emerald-100 hover:text-emerald-300 transition-colors"
+                className="absolute top-3 right-3 text-emerald-100 hover:text-emerald-300 transition-colors touch-target"
                 onClick={() => setViewPhoto(null)}
                 aria-label="Close"
               >
-                <X className="h-7 w-7" />
+                <X className="h-6 w-6 sm:h-7 sm:w-7" />
               </button>
               <img
                 src={viewPhoto.src || "/placeholder.svg"}
                 alt={viewPhoto.name}
-                className="rounded-xl object-cover mb-3 w-full aspect-[5/4] border border-emerald-800/20 bg-emerald-950"
+                className="rounded-2xl object-cover mb-4 w-full aspect-[5/4] border border-emerald-800/20 bg-emerald-950"
                 style={{ maxHeight: 260 }}
               />
-              <h3 className="text-xl font-bold text-white mb-2 text-center">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2 text-center">
                 {viewPhoto.name}
               </h3>
               {viewPhoto.desc && (
-                <p className="text-base text-emerald-200 text-center">
+                <p className="text-sm sm:text-base text-emerald-200 text-center leading-relaxed">
                   {viewPhoto.desc}
                 </p>
               )}
@@ -267,21 +322,25 @@ const ServicesPage = ({ onBookingClick }) => {
 
       <div className="bg-emerald-950 text-white min-h-screen">
         {/* --- Hero Section --- */}
-        <section className="relative pt-12 pb-8 md:pt-20 md:pb-16 bg-gradient-to-br from-emerald-900 to-emerald-950 overflow-hidden">
-          <div className="absolute inset-0 opacity-10 pointer-events-none z-0">
-            <div className="absolute top-8 left-8 w-24 h-24 bg-white rounded-full blur-2xl"></div>
-            <div className="absolute bottom-16 right-8 w-16 h-16 bg-emerald-200 rounded-full blur-2xl"></div>
-          </div>
-          <div className="max-w-xl mx-auto px-3 text-center relative z-10">
+        <section className="relative pt-12 pb-8 sm:pt-16 md:pt-20 sm:pb-12 md:pb-16 bg-gradient-to-br from-emerald-900 to-emerald-950 overflow-hidden">
+          {/* Background Elements */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(230,201,122,0.05),transparent_50%)]" />
+          
+          <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="space-y-4"
+              className="space-y-4 sm:space-y-6"
             >
-              <Sparkles className="h-12 w-12" style={{ color: GOLD, filter: "drop-shadow(0 1px 6px #E6C97A66)" }} />
+              <div className="inline-flex items-center gap-2 px-3 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-4">
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-gold" />
+                <span className="text-xs sm:text-sm font-medium text-emerald-100">Our Services</span>
+              </div>
+              
               <h1
-                className="text-3xl xs:text-4xl font-extrabold text-white"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white"
                 style={{
                   letterSpacing: "0.13em",
                   textTransform: "uppercase",
@@ -300,7 +359,8 @@ const ServicesPage = ({ onBookingClick }) => {
                   Services
                 </span>
               </h1>
-              <p className="text-base xs:text-lg text-emerald-100 leading-relaxed">
+              
+              <p className="text-sm sm:text-base md:text-lg text-emerald-100 leading-relaxed max-w-2xl mx-auto px-4">
                 Discover beauty services designed to pamper and elevate you in our jungle glam sanctuary.
               </p>
             </motion.div>
@@ -308,11 +368,11 @@ const ServicesPage = ({ onBookingClick }) => {
         </section>
 
         {/* --- Services Grid --- */}
-        <section className="pt-4 pb-12 md:pb-24 bg-emerald-950">
-          <div className="max-w-2xl md:max-w-5xl mx-auto px-2 xs:px-3">
+        <section className="pt-4 pb-12 sm:pb-16 md:pb-24 bg-gradient-to-b from-emerald-900 to-emerald-950">
+          <div className="max-w-6xl mx-auto px-4">
             {loading ? (
-              <div className="text-center text-xl py-20 text-emerald-200 font-semibold">
-                <div className="animate-spin rounded-full h-9 w-9 border-b-2 border-emerald-100 mx-auto mb-2"></div>
+              <div className="text-center text-lg sm:text-xl py-20 text-emerald-200 font-semibold">
+                <div className="animate-spin rounded-full h-8 w-8 sm:h-9 sm:w-9 border-b-2 border-emerald-100 mx-auto mb-4"></div>
                 Loading services...
               </div>
             ) : grouped.length === 0 ? (
@@ -325,24 +385,24 @@ const ServicesPage = ({ onBookingClick }) => {
                 return (
                   <motion.div
                     key={category.category}
-                    initial={{ opacity: 0, y: 28 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: categoryIndex * 0.04 }}
+                    transition={{ duration: 0.7, delay: categoryIndex * 0.1 }}
                     viewport={{ once: true }}
-                    className="mb-10 md:mb-14"
+                    className="mb-12 sm:mb-16"
                   >
-                    <div className="flex items-center justify-start gap-3 mb-6 px-1">
+                    <div className="flex items-center justify-start gap-3 mb-6 sm:mb-8">
                       <div
-                        className="bg-emerald-800 w-10 h-10 rounded-full flex items-center justify-center"
+                        className={`bg-gradient-to-br from-emerald-800 to-emerald-700 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-lg shadow-emerald-950/30 border border-white/20`}
                         style={{
                           border: `2px solid ${GOLD}55`,
                           boxShadow: `0 2px 8px ${GOLD}33`,
                         }}
                       >
-                        <CategoryIcon className="w-6 h-6" style={{ color: GOLD }} />
+                        <CategoryIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </div>
                       <h2
-                        className="text-xl xs:text-2xl font-bold text-white"
+                        className="text-lg sm:text-xl md:text-2xl font-bold text-white"
                         style={{
                           letterSpacing: "0.07em",
                           textTransform: "uppercase",
@@ -354,34 +414,37 @@ const ServicesPage = ({ onBookingClick }) => {
                       </h2>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-7">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                       {category.items.map((service, serviceIndex) => (
                         <motion.div
                           key={service.id}
-                          initial={{ opacity: 0, scale: 0.97 }}
+                          initial={{ opacity: 0, scale: 0.95 }}
                           whileInView={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.45, delay: serviceIndex * 0.03 }}
+                          transition={{ duration: 0.5, delay: serviceIndex * 0.05 }}
                           viewport={{ once: true }}
                           whileHover={{
-                            scale: 1.03,
+                            scale: 1.02,
                             boxShadow:
                               `0 8px 40px 0 #31786844, 0 1px 10px #29523818, 0 1px 12px ${GOLD}18`,
                           }}
-                          className="rounded-2xl p-4 xs:p-5 bg-emerald-900/80 border group hover:shadow-xl flex flex-col transition-all duration-300"
+                          className="rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-emerald-900/80 to-emerald-800/80 backdrop-blur-xl border group hover:shadow-xl flex flex-col transition-all duration-300"
                           style={{
                             border: `1.5px solid ${GOLD}22`,
                           }}
                         >
-                          <div className="flex justify-between items-start mb-2 gap-2">
-                            <h3
-                              className="font-semibold text-lg xs:text-xl text-white leading-snug"
-                              style={{ color: GOLD }}
-                            >
-                              {service.name}
-                            </h3>
+                          <div className="flex justify-between items-start mb-3 gap-2">
+                            <div className="flex items-center gap-2 flex-1">
+                              <span className="text-xl sm:text-2xl">{service.icon}</span>
+                              <h3
+                                className="font-semibold text-base sm:text-lg text-white leading-snug"
+                                style={{ color: GOLD }}
+                              >
+                                {service.name}
+                              </h3>
+                            </div>
                             <div className="text-right">
                               <div
-                                className="text-lg font-bold"
+                                className="text-base sm:text-lg font-bold"
                                 style={{
                                   color: GOLD,
                                   textShadow: "0 1px 8px #fff8, 0 1px 6px #E6C97A33",
@@ -390,20 +453,22 @@ const ServicesPage = ({ onBookingClick }) => {
                                 €{service.price}
                               </div>
                               <div className="flex items-center text-xs text-emerald-300 mt-1">
-                                <Clock className="h-4 w-4 mr-1" />
+                                <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                 {service.duration} min
                               </div>
                             </div>
                           </div>
-                          <p className="text-emerald-100 text-base leading-snug mb-3 flex-grow">
+                          
+                          <p className="text-emerald-100 text-sm sm:text-base leading-snug mb-4 flex-grow">
                             {service.description}
                           </p>
+                          
                           <div className="flex items-center justify-between mt-auto">
                             <div className="flex items-center">
                               {[...Array(5)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className="h-4 w-4"
+                                  className="h-3 w-3 sm:h-4 sm:w-4"
                                   style={{
                                     color: GOLD,
                                     filter: "drop-shadow(0 1px 2px #E6C97A88)",
@@ -411,14 +476,15 @@ const ServicesPage = ({ onBookingClick }) => {
                                   fill={GOLD}
                                 />
                               ))}
-                              <span className="text-xs" style={{ color: GOLD }}>
+                              <span className="text-xs ml-1" style={{ color: GOLD }}>
                                 5.0
                               </span>
                             </div>
-                            <div className="flex gap-1 xs:gap-2">
+                            
+                            <div className="flex gap-2">
                               <Button
                                 size="sm"
-                                className="bg-transparent border"
+                                className="bg-transparent border touch-target"
                                 style={{
                                   border: `1.5px solid ${GOLD}55`,
                                   color: GOLD,
@@ -434,17 +500,15 @@ const ServicesPage = ({ onBookingClick }) => {
                                 title="View Service Photo"
                               >
                                 <Eye className="h-4 w-4" style={{ color: GOLD }} />
-                                <span className="hidden xs:inline">View</span>
+                                <span className="hidden sm:inline ml-1">View</span>
                               </Button>
+                              
                               <Button
                                 size="sm"
-                                className="bg-gradient-to-r from-yellow-100 via-yellow-50 to-amber-100 text-emerald-950 font-bold rounded-lg px-3 xs:px-4 py-1 xs:py-2 text-xs xs:text-sm border"
+                                className="bg-gradient-to-r from-gold via-yellow-400 to-gold text-emerald-950 font-bold rounded-lg px-3 py-2 text-xs sm:text-sm border touch-target"
                                 style={{
                                   border: `1.5px solid ${GOLD}55`,
                                   boxShadow: `0 1px 8px ${GOLD}22`,
-                                  background: "linear-gradient(90deg, #FFD700 15%, #fffbe6 80%, #E6C97A 100%)",
-                                  color: "#4C3B12",
-                                  fontWeight: 700,
                                 }}
                                 onClick={onBookingClick}
                               >
@@ -463,50 +527,68 @@ const ServicesPage = ({ onBookingClick }) => {
         </section>
 
         {/* --- Call to Action --- */}
-        <section className="py-10 md:py-16 bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-800">
-          <div className="max-w-xl mx-auto px-2 text-center">
+        <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-800">
+          <div className="max-w-4xl mx-auto px-4 text-center">
             <motion.div
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
+              <div className="inline-flex items-center gap-2 px-3 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-4">
+                <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gold" />
+                <span className="text-xs sm:text-sm font-medium text-emerald-100">Ready to Book?</span>
+              </div>
+              
               <h2
-                className="text-2xl xs:text-3xl font-bold text-white mb-3"
+                className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6"
                 style={{
                   letterSpacing: "0.07em",
                   color: GOLD,
-                  textShadow: `0 1px 6px ${GOLD}33`,
+                  textShadow: `0 2px 12px ${GOLD}33`,
                 }}
               >
                 Ready to Transform Your Look?
               </h2>
-              <p className="text-base xs:text-lg text-emerald-100 mb-5">
+              
+              <p className="text-sm sm:text-base md:text-lg text-emerald-100 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4">
                 Book your appointment and experience our jungle glam sanctuary.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-sm sm:max-w-md mx-auto">
                 <Button
-                  className="w-full sm:w-auto font-semibold rounded-full shadow-lg transition-all duration-300"
+                  className="group relative overflow-hidden bg-gradient-to-r from-gold via-yellow-400 to-gold text-emerald-950 px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-bold rounded-full shadow-2xl transition-all duration-300 hover:scale-105 w-full touch-target"
                   style={{
-                    background: "linear-gradient(90deg, #FFD700 15%, #fffbe6 80%, #E6C97A 100%)",
-                    color: "#4C3B12",
-                    border: `2px solid ${GOLD}55`,
                     fontWeight: 800,
+                    letterSpacing: "0.02em",
                   }}
                   onClick={onBookingClick}
                 >
-                  Book Appointment
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Book Appointment
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "100%" }}
+                    transition={{ duration: 0.6 }}
+                  />
                 </Button>
+                
                 <Button
                   variant="outline"
-                  className="w-full sm:w-auto border-2 px-6 py-3 text-base xs:text-lg font-semibold rounded-full transition-all duration-300"
+                  className="border-2 px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-semibold rounded-full transition-all duration-300 hover:bg-white/10 w-full touch-target"
                   style={{
-                    border: `2px solid ${GOLD}`,
+                    borderColor: GOLD,
                     color: GOLD,
                     fontWeight: 600,
                   }}
                 >
-                  Contact Us
+                  <span className="flex items-center justify-center gap-2">
+                    <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Contact Us
+                  </span>
                 </Button>
               </div>
             </motion.div>
