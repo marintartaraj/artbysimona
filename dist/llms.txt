@@ -1,8 +1,6 @@
 ## Pages
-- [- Art by Simona](/about): No description available
-- [- Art by Simona](/gallery): A gallery of our finest work at Art by Simona.
-- [- Art by Simona](/services): Explore our luxury beauty services: lashes, nails, makeup, and brows.
 - [Admin Dashboard - Art by Simona](/admindashboard): Admin dashboard for Art by Simona beauty salon management.
-- [Art by Simona - Luxury Beauty Salon in Tirana | Jungle Glam](/home): Experience luxury beauty treatments at Art by Simona in Tirana. Specializing in lashes, nails, makeup, and brows with a unique jungle glam aesthetic.
+- [Gallery - Art by Simona | Beauty Portfolio & Salon Photos](/gallery): Explore our stunning gallery showcasing lash extensions, nail artistry, makeup transformations, hair styling, microblading, and our beautiful jungle glam salon.
 - [Login - Art by Simona](/login): Login to your Art by Simona account to access your dashboard.
+- [Our Services - Art by Simona | Lashes, Nails, Makeup & More](/services): Discover our comprehensive beauty services including lash extensions, nail artistry, makeup, hair styling, and microblading. Professional quality with luxury jungle glam experience.
 - [Worker Dashboard - Art by Simona](/workerdashboard): Worker dashboard for Art by Simona beauty salon.
