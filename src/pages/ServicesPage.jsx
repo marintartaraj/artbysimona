@@ -14,10 +14,7 @@ import {
   Heart,
   ArrowRight,
   Calendar,
-  Phone,
   Mail,
-  Award,
-  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -30,6 +27,7 @@ const ServicesPage = ({ onBookingClick }) => {
   const [loading, setLoading] = useState(true);
   const [viewPhoto, setViewPhoto] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedService, setSelectedService] = useState(null); // 🟢 NEW: for preselecting service in modal
 
   const mockServices = [
     // Lash Extensions
@@ -37,6 +35,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 1,
       category: "Lash Extensions",
       name: "Classic Lashes",
+      value: "lashes", // 🟢 Add value for use with BookingModal
       price: 45,
       duration: 90,
       description: "Natural-looking individual lash extensions for everyday elegance",
@@ -47,6 +46,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 2,
       category: "Lash Extensions",
       name: "Volume Lashes",
+      value: "lashes",
       price: 65,
       duration: 120,
       description: "Dramatic volume with multiple ultra-fine lashes per natural lash",
@@ -57,6 +57,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 3,
       category: "Lash Extensions",
       name: "Hybrid Lashes",
+      value: "lashes",
       price: 55,
       duration: 105,
       description: "Perfect blend of classic and volume techniques for textured fullness",
@@ -67,6 +68,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 4,
       category: "Lash Extensions",
       name: "Lash Lift & Tint",
+      value: "lashes",
       price: 35,
       duration: 60,
       description: "Natural lash enhancement with curl and color for low-maintenance beauty",
@@ -78,6 +80,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 5,
       category: "Nail Artistry",
       name: "Gel Manicure",
+      value: "nails",
       price: 35,
       duration: 60,
       description: "Long-lasting gel polish with cuticle care and hand massage",
@@ -88,6 +91,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 6,
       category: "Nail Artistry",
       name: "Nail Art Design",
+      value: "nails",
       price: 50,
       duration: 90,
       description: "Custom nail art with intricate designs and premium finishes",
@@ -98,6 +102,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 7,
       category: "Nail Artistry",
       name: "Gel Extensions",
+      value: "nails",
       price: 60,
       duration: 120,
       description: "Beautiful nail extensions with gel overlay and shaping",
@@ -108,6 +113,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 8,
       category: "Nail Artistry",
       name: "Luxury Pedicure",
+      value: "nails",
       price: 45,
       duration: 75,
       description: "Complete foot care with exfoliation, massage, and gel polish",
@@ -119,6 +125,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 9,
       category: "Makeup Artistry",
       name: "Bridal Makeup",
+      value: "makeup",
       price: 80,
       duration: 90,
       description: "Flawless bridal look with trial session and touch-up kit",
@@ -129,6 +136,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 10,
       category: "Makeup Artistry",
       name: "Special Event Makeup",
+      value: "makeup",
       price: 60,
       duration: 60,
       description: "Glamorous makeup for parties, photoshoots, and special occasions",
@@ -139,6 +147,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 11,
       category: "Makeup Artistry",
       name: "Natural Glam",
+      value: "makeup",
       price: 45,
       duration: 45,
       description: "Everyday makeup enhancement with natural, radiant finish",
@@ -150,6 +159,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 12,
       category: "Hair Styling",
       name: "Cut & Style",
+      value: "hair",
       price: 50,
       duration: 90,
       description: "Professional haircut with wash, style, and finishing",
@@ -160,6 +170,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 13,
       category: "Hair Styling",
       name: "Color & Highlights",
+      value: "hair",
       price: 85,
       duration: 180,
       description: "Hair coloring with highlights and professional color treatment",
@@ -170,6 +181,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 14,
       category: "Hair Styling",
       name: "Blowout & Style",
+      value: "hair",
       price: 35,
       duration: 45,
       description: "Professional blowout with styling for special occasions",
@@ -181,6 +193,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 15,
       category: "Microblading",
       name: "Microblading",
+      value: "brows",
       price: 180,
       duration: 150,
       description: "Semi-permanent eyebrow enhancement with natural hair-stroke technique",
@@ -191,6 +204,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 16,
       category: "Microblading",
       name: "Microblading Touch-up",
+      value: "brows",
       price: 80,
       duration: 90,
       description: "6-8 week touch-up session to perfect your microblading results",
@@ -201,6 +215,7 @@ const ServicesPage = ({ onBookingClick }) => {
       id: 17,
       category: "Microblading",
       name: "Brow Shaping & Tint",
+      value: "brows",
       price: 25,
       duration: 30,
       description: "Professional eyebrow shaping with tinting for defined brows",
@@ -210,13 +225,9 @@ const ServicesPage = ({ onBookingClick }) => {
   ];
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -263,8 +274,6 @@ const ServicesPage = ({ onBookingClick }) => {
         return Sparkles;
     }
   };
-
-  const popularServices = services.filter(service => service.popular);
 
   return (
     <>
@@ -510,7 +519,11 @@ const ServicesPage = ({ onBookingClick }) => {
                                   border: `1.5px solid ${GOLD}55`,
                                   boxShadow: `0 1px 8px ${GOLD}22`,
                                 }}
-                                onClick={onBookingClick}
+                                // 🟢 Set preselected service value!
+                                onClick={() => {
+                                  setSelectedService(service.value);
+                                  onBookingClick(service.value);
+                                }}
                               >
                                 Book
                               </Button>
@@ -562,7 +575,10 @@ const ServicesPage = ({ onBookingClick }) => {
                     fontWeight: 800,
                     letterSpacing: "0.02em",
                   }}
-                  onClick={onBookingClick}
+                  onClick={() => {
+                    setSelectedService(null);
+                    onBookingClick(null);
+                  }}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     Book Appointment

@@ -1,17 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MessageCircle, Send, Calendar, Clock, User, Phone, X, CheckCircle, Star } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Calendar,
+  Clock,
+  User,
+  Phone,
+  X,
+  CheckCircle,
+  Star,
+} from 'lucide-react';
 
 const GOLD = "#E6C97A";
-const EMERALD = "#10B981";
 
-const BookingModal = ({ isOpen, onClose }) => {
+const BookingModal = ({ isOpen, onClose, selectedService }) => {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [isMobile, setIsMobile] = useState(false);
@@ -24,16 +44,31 @@ const BookingModal = ({ isOpen, onClose }) => {
     phone: ''
   });
 
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    return () => document.body.classList.remove('overflow-hidden');
+  }, [isOpen]);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // 🟢 Prefill service if provided
+  useEffect(() => {
+    if (isOpen && selectedService) {
+      setBookingData(prev => ({ ...prev, service: selectedService }));
+    }
+  }, [isOpen, selectedService]);
 
   const services = [
     { value: 'lashes', label: t('lashes'), icon: '👁️', duration: '2-3 hours' },
@@ -47,15 +82,14 @@ const BookingModal = ({ isOpen, onClose }) => {
   ];
 
   const handleWhatsApp = () => {
-    const selectedService = services.find(s => s.value === bookingData.service);
-    const message = `Hello! I'd like to book a ${selectedService?.label || 'beauty'} appointment for ${bookingData.date} at ${bookingData.time}. My name is ${bookingData.name}.`;
+    const selected = services.find(s => s.value === bookingData.service);
+    const message = `Hello! I'd like to book a ${selected?.label || 'beauty'} appointment for ${bookingData.date} at ${bookingData.time}. My name is ${bookingData.name}.`;
     const whatsappUrl = `https://wa.me/355692345678?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!bookingData.service || !bookingData.date || !bookingData.time || !bookingData.name || !bookingData.phone) {
       toast({
         title: "Incomplete Form",
@@ -64,12 +98,9 @@ const BookingModal = ({ isOpen, onClose }) => {
       });
       return;
     }
-
     setIsSubmitting(true);
-
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
-
     const bookings = JSON.parse(localStorage.getItem('artBySimonaBookings') || '[]');
     const newBooking = {
       id: Date.now(),
@@ -79,13 +110,11 @@ const BookingModal = ({ isOpen, onClose }) => {
     };
     bookings.push(newBooking);
     localStorage.setItem('artBySimonaBookings', JSON.stringify(bookings));
-
     toast({
       title: "Booking Confirmed! 🎉",
       description: t('bookingSuccess'),
       className: "bg-emerald-600 border-emerald-500/50 text-white"
     });
-
     setBookingData({ service: '', date: '', time: '', name: '', phone: '' });
     setIsSubmitting(false);
     onClose();
@@ -103,40 +132,24 @@ const BookingModal = ({ isOpen, onClose }) => {
     return tomorrow.toISOString().split('T')[0];
   };
 
-  const selectedService = services.find(s => s.value === bookingData.service);
+  const selected = services.find(s => s.value === bookingData.service);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-gradient-to-br from-emerald-950/95 via-emerald-900/90 to-emerald-800/95 backdrop-blur-xl border border-emerald-100/20 shadow-2xl shadow-black/50 max-w-[95vw] sm:max-w-lg md:max-w-xl rounded-3xl p-4 sm:p-6 transition-all duration-300 z-[10000] overflow-y-auto max-h-[90vh]">
-        <DialogHeader className="mb-4 sm:mb-6">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-4">
-              <Calendar className="w-4 h-4 text-gold" />
-              <span className="text-xs sm:text-sm font-medium text-emerald-100">Book Your Session</span>
-            </div>
-            <DialogTitle
-              className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white text-center tracking-wide mb-2"
-              style={{ 
-                fontFamily: "'Playfair Display', serif", 
-                fontWeight: 700,
-                textShadow: `0 2px 12px ${GOLD}33`
-              }}
-            >
-              {t('bookingTitle')}
-            </DialogTitle>
-            <p className="text-xs sm:text-sm md:text-base text-emerald-200 text-center leading-relaxed px-2">
-              Experience luxury beauty services in our jungle-inspired sanctuary
-            </p>
-          </motion.div>
-        </DialogHeader>
+      <DialogContent
+        className="
+          bg-gradient-to-br from-emerald-950/95 via-emerald-900/90 to-emerald-800/95
+          backdrop-blur-xl border border-emerald-100/20 shadow-2xl shadow-black/50
+          max-w-[95vw] sm:max-w-lg md:max-w-xl rounded-3xl p-4 sm:p-6
+          transition-all duration-300 z-[10000]
+          overflow-y-auto max-h-[90dvh]
+          flex flex-col
+        "
+        style={{ overscrollBehavior: "contain" }}
+      >
 
-        <motion.form 
-          onSubmit={handleSubmit} 
+        <motion.form
+          onSubmit={handleSubmit}
           className="flex flex-col gap-3 sm:gap-4 w-full"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -154,8 +167,8 @@ const BookingModal = ({ isOpen, onClose }) => {
               </SelectTrigger>
               <SelectContent className="bg-emerald-900/95 backdrop-blur-xl border-emerald-800/30 w-full max-w-[calc(100vw-2rem)] sm:max-w-none z-[10001]">
                 {services.map(service => (
-                  <SelectItem 
-                    key={service.value} 
+                  <SelectItem
+                    key={service.value}
                     value={service.value}
                     className="text-white hover:bg-emerald-800/50 focus:bg-emerald-800/50 touch-target py-3"
                   >
@@ -201,8 +214,8 @@ const BookingModal = ({ isOpen, onClose }) => {
                 </SelectTrigger>
                 <SelectContent className="bg-emerald-900/95 backdrop-blur-xl border-emerald-800/30 w-full max-w-[calc(100vw-2rem)] sm:max-w-none z-[10001]">
                   {timeSlots.map(time => (
-                    <SelectItem 
-                      key={time} 
+                    <SelectItem
+                      key={time}
                       value={time}
                       className="text-white hover:bg-emerald-800/50 focus:bg-emerald-800/50 touch-target py-3"
                     >
@@ -248,17 +261,17 @@ const BookingModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* Service Preview */}
-          {selectedService && (
+          {selected && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="bg-gradient-to-r from-emerald-800/30 to-emerald-700/30 border border-emerald-600/30 rounded-xl p-3 sm:p-4"
             >
               <div className="flex items-center gap-3">
-                <span className="text-xl sm:text-2xl">{selectedService.icon}</span>
+                <span className="text-xl sm:text-2xl">{selected.icon}</span>
                 <div>
-                  <div className="font-semibold text-white text-sm sm:text-base">{selectedService.label}</div>
-                  <div className="text-xs sm:text-sm text-emerald-300">Duration: {selectedService.duration}</div>
+                  <div className="font-semibold text-white text-sm sm:text-base">{selected.label}</div>
+                  <div className="text-xs sm:text-sm text-emerald-300">Duration: {selected.duration}</div>
                 </div>
               </div>
             </motion.div>

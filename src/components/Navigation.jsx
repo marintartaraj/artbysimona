@@ -14,6 +14,10 @@ const Navigation = ({ onBookingClick }) => {
   const { t, toggleLanguage } = useLanguage();
   const location = useLocation();
 
+  // NEW: For hide/reveal on scroll
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [showNav, setShowNav] = useState(true);
+
   const menuItems = [
     { key: 'home', label: t('home'), path: '/' },
     { key: 'about', label: t('about'), path: '/about' },
@@ -24,22 +28,51 @@ const Navigation = ({ onBookingClick }) => {
   const handleMenuClick = () => setIsMenuOpen(false);
   const handleBookingFromMenu = () => { onBookingClick(); setIsMenuOpen(false); };
 
+  // Track mobile and scroll for background effect
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    
+
     checkMobile();
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', checkMobile);
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
+
+  // --- Hide/Reveal Nav on Scroll Down/Up ---
+  useEffect(() => {
+    let ticking = false;
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          if (currentScrollY > lastScrollY && currentScrollY > 60) {
+            setShowNav(false); // Hide on scroll down
+          } else {
+            setShowNav(true); // Show on scroll up
+          }
+          setLastScrollY(currentScrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [lastScrollY]);
+
+  // Always show nav if menu is open
+  useEffect(() => {
+    if (isMenuOpen) setShowNav(true);
+  }, [isMenuOpen]);
 
   const activeLinkStyle = {
     color: "#e5c97a",
@@ -51,7 +84,12 @@ const Navigation = ({ onBookingClick }) => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-500 ease-out ${isScrolled || isMenuOpen ? glass : 'bg-transparent'}`}>
+      <nav className={`
+        fixed top-0 left-0 right-0 z-[9999]
+        transition-transform duration-300 ease-in-out
+        ${showNav ? 'translate-y-0' : '-translate-y-full'}
+        ${isScrolled || isMenuOpen ? glass : 'bg-transparent'}
+      `}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
           {/* Logo */}
           <NavLink to="/">

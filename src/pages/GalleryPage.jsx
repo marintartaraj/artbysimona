@@ -147,10 +147,8 @@ const Gallery = ({ onBookingClick }) => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -174,6 +172,7 @@ const Gallery = ({ onBookingClick }) => {
     setSelectedImage(filteredImages[newIndex])
   }
 
+  // Not actually used here but kept for completeness.
   const getCategoryIcon = (categoryId) => {
     switch (categoryId) {
       case "lashes":
@@ -259,41 +258,57 @@ const Gallery = ({ onBookingClick }) => {
         </div>
       </section>
 
-      {/* Filter Tabs */}
-      <section className="py-6 sm:py-8 bg-gradient-to-b from-emerald-800 to-emerald-900">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-2 sm:pb-0 sm:justify-center">
-            {categories.map(({ id, name, icon }) => {
-              const CategoryIcon = getCategoryIcon(id)
-              return (
-                <motion.button
-                  key={id}
-                  onClick={() => setSelectedCategory(id)}
-                  className={`
-                    flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-full font-semibold whitespace-nowrap transition-all duration-300 touch-target
-                    ${selectedCategory === id
-                      ? "bg-gradient-to-r from-gold to-yellow-400 text-emerald-950 shadow-lg scale-105 border-2"
-                      : "bg-emerald-800/40 backdrop-blur-sm border border-emerald-700/30 text-emerald-100 hover:bg-emerald-800/60"
-                    }
-                  `}
-                  style={{
-                    fontFamily: "'Montserrat', sans-serif",
-                    border: selectedCategory === id ? `2px solid ${GOLD}` : undefined,
-                    color: selectedCategory === id ? "#4C3B12" : undefined,
-                    boxShadow: selectedCategory === id ? `0 1px 8px ${GOLD}33` : undefined,
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="button"
-                >
-                  <span className="text-sm sm:text-base">{icon}</span>
-                  <span className="text-xs sm:text-sm">{name}</span>
-                </motion.button>
-              )
-            })}
-          </div>
-        </div>
-      </section>
+      {/* Filter Tabs: Mobile Scrollable Slider */}
+<section className="py-6 sm:py-8 bg-gradient-to-b from-emerald-800 to-emerald-900">
+  <div className="max-w-6xl mx-auto px-4">
+    <div
+      className="
+        flex gap-2 sm:gap-3 
+        overflow-x-auto no-scrollbar pb-2 sm:pb-0 sm:justify-center 
+        scroll-smooth snap-x snap-mandatory
+      "
+      style={{
+        WebkitOverflowScrolling: "touch",
+      }}
+      tabIndex={0}
+      role="tablist"
+      aria-label="Gallery categories"
+    >
+      {categories.map(({ id, name, icon }) => (
+        <motion.button
+          key={id}
+          onClick={() => setSelectedCategory(id)}
+          className={`
+            flex items-center gap-2 px-5 py-2 sm:px-6 sm:py-3 rounded-full font-semibold whitespace-nowrap transition-all duration-300
+            snap-center flex-shrink-0
+            ${selectedCategory === id
+              ? "bg-gradient-to-r from-gold to-yellow-400 text-emerald-950 shadow-lg scale-105 border-2"
+              : "bg-emerald-800/40 backdrop-blur-sm border border-emerald-700/30 text-emerald-100 hover:bg-emerald-800/60"
+            }
+          `}
+          style={{
+            fontFamily: "'Montserrat', sans-serif",
+            border: selectedCategory === id ? `2px solid ${GOLD}` : undefined,
+            color: selectedCategory === id ? "#4C3B12" : undefined,
+            boxShadow: selectedCategory === id ? `0 1px 8px ${GOLD}33` : undefined,
+            scrollSnapAlign: "center",
+          }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          type="button"
+          tabIndex={0}
+          aria-selected={selectedCategory === id}
+          aria-label={name}
+        >
+          <span className="text-sm sm:text-base flex-shrink-0">{icon}</span>
+          <span className="text-xs sm:text-sm flex-shrink-0">{name}</span>
+        </motion.button>
+      ))}
+    </div>
+  </div>
+</section>
+
+
 
       {/* Gallery Grid */}
       <section className="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-emerald-900 to-emerald-950">
